@@ -337,7 +337,8 @@ Configure options:
 | `fastestInterval`         | `Number`          | Android      | Fastest rate in milliseconds at which your app can handle location updates. **@see** [Android  docs](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest.html#getFastestInterval()).                                                                                                                   | ACT         | 120000                     | 
 | `activitiesInterval`      | `Number`          | Android      | Rate in milliseconds at which activity recognition occurs. Larger values will result in fewer activity detections while improving battery life.                                                                                                                                                                                                    | ACT         | 10000                      | 
 | `stopOnStillActivity`     | `Boolean`         | Android      | @deprecated stop location updates, when the STILL activity is detected                                                                                                                                                                                                                                                                             | ACT         | true                       | 
-| `startForeground`         | `Boolean`         | Android      | show service notification when in foreground                                                                                                                                                                                                                                                                                                       | all         | false                      |
+| `startForeground`         | `Boolean`         | Android      | allow location sync service to run in foreground state, and show background/sync notifications in foreground mode                                                                                                                                                                                                                                  | all         | false                      |
+| `notificationsEnabled`    | `Boolean`         | Android      | Enable/disable local notifications when tracking and syncing locations                                                                                                                                                                                                                                                                             | all         | true                       |
 | `notificationTitle`       | `String` optional | Android      | Custom notification title in the drawer.                                                                                                                                                                                                                                                                                                           | all         | "Background tracking"      | 
 | `notificationText`        | `String` optional | Android      | Custom notification text in the drawer.                                                                                                                                                                                                                                                                                                            | all         | "ENABLED"                  | 
 | `notificationIconColor`   | `String` optional | Android      | The accent color to use for notification. Eg. **#4CAF50**.                                                                                                                                                                                                                                                                                         | all         |                            | 
@@ -678,6 +679,53 @@ BackgroundGeolocation.headlessTask(function(event) {
 
     return 'Processing event: ' + event.name; // will be logged
 });
+```
+
+### Transforming/filtering locations in native code
+
+In some cases you might want to modify a location before posting, reject a location, or any other logic around incoming locations - in native code. There's an option of doing so with a headless task, but you may want to preserve battery, or do more complex actions that are not available in React.
+
+In those cases you could register a location transform.
+
+Android example:
+
+When the `Application` is initialized (which also happens before services gets started in the background), write some code like this:
+
+```
+BackgroundGeolocationFacade.setLocationTransform(new ILocationTransform() {
+            @Nullable
+            @Override
+            public BackgroundLocation transformLocationBeforeCommit(@NonNull Context context, @NonNull BackgroundLocation location) {
+                // `context` is available too if there's a need to use a value from preferences etc.
+                
+                // Modify the location
+                location.setLatitude(location.getLatitude() + 0.018);
+                
+                // Return modified location
+                return location;
+  
+                // You could return null to reject the location,
+                // or if you did something else with the location and the library should not post or save it.
+            }
+        }
+```
+
+iOS example:
+
+
+In `didFinishLaunchingWithOptions` delegate method, write some code like this:
+
+```
+BackgroundGeolocationFacade.locationTransform = ^(MAURLocation * location) {
+  // Modify the location
+  location.latitude = @(location.latitude.doubleValue + 0.018);
+  
+  // Return modified location
+  return location;
+  
+  // You could return null to reject the location,
+  // or if you did something else with the location and the library should not post or save it.
+};
 ```
 
 ### Example of backend server

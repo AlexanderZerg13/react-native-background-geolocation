@@ -54,6 +54,11 @@ Sice alpha.28:
 Sice alpha.31:
 - Android Gradle3 support (experimental)
 
+Sice alpha.37:
+- Transforming/filtering locations in native code (by [@danielgindi](https://github.com/danielgindi/))
+More info: https://github.com/mauron85/background-geolocation-android/pull/8
+
+
 ### Changed
 
 Since alpha.6:
@@ -154,6 +159,12 @@ Sice alpha.28:
 Since alpha.35:
 - Android getCurrentLocation runs on background thread (PR #219 by [@djereg](https://github.com/djereg/))
 - iOS Fix crash on delete all location ([7392e39](https://github.com/mauron85/background-geolocation-ios/commit/7392e391c3de3ff0d6f5ef2ef19c34aba612bf9b) by [@acerbetti](https://github.com/acerbetti/))
+
+Since alpha.36:
+- Android Defer start and configure until service is ready
+(PR: [#7](https://github.com/mauron85/background-geolocation-android/pull/7)
+Commit: [00e1314](https://github.com/mauron85/background-geolocation-android/commit/00e131478ad4e37576eb85581bb663b65302a4e0) by [@danielgindi](https://github.com/danielgindi/),
+fixes #201, #181, #172)
 
 ### [0.4.1] - 2017-12-19
 #### Changed
